@@ -1,66 +1,78 @@
 # PR Forge
 
-Full-stack workout application for creating routines, logging training sessions and tracking progression.
+Workout tracker for creating routines, logging sessions and following strength progression
 
-The repository is an npm monorepo with a Next.js frontend, an Express API and PostgreSQL.
+Built with Next.js, Express, Sequelize and PostgreSQL.
 
-## Run the complete application with Docker
+## Tech stack
 
-Requirements: Docker Desktop with Docker Compose.
+- Frontend: Next.js, React, Tailwind CSS
+- Backend: Node.js, Express
+- Database: PostgreSQL, Sequelize
+- Testing: Vitest, Supertest
+- Tooling: Docker Compose, ESLint, Prettier, GitHub Actions CI
 
-1. Create the root environment file:
+## Run with Docker
 
-```powershell
+Docker Desktop and Docker Compose are required, open Docker Desktop before running the commands
+
+From the project root, create the environment file:
+
+```
 Copy-Item .env.example .env
 ```
 
-The included values are intended only for local development.
+On macOS or Linux:
 
-2. Start the application:
+```
+cp .env.example .env
+```
 
-```bash
+Then start the application:
+
+```
 docker compose up --build
 ```
 
-3. Open `http://localhost:3000` and register an account.
+The first start builds the images, runs the migrations and loads the exercise catalog
 
-Docker creates the database, runs the migrations, loads the exercise catalog and starts both applications. The API health endpoint is available at `http://localhost:3001/health`.
+- App: `http://localhost:3000`
+- API health: `http://localhost:3001/health`
 
-Stop the containers with:
+Use `Ctrl+C` to stop the logs, then remove the containers with:
 
-```bash
+```
 docker compose down
 ```
 
-## Local development
+Database data is kept between restarts
 
-Requirements: Node.js 24 and PostgreSQL.
+## Run without Docker
 
-Create `backend/.env` and `frontend/.env.local` from their example files, then run from the repository root:
+This requires Node.js 24 and a local PostgreSQL instance.
 
-```bash
+Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env.local`. Update the database values in `backend/.env` and create the configured database before running:
+
+```
 npm ci
 npm run db:setup
 npm run dev
 ```
 
-The frontend runs on `http://localhost:3000` and the API on `http://localhost:3001`.
+## Checks
 
-## Commands
-
-```bash
-npm run dev
-npm run db:setup
-npm run build
+```
+npm run format:check
 npm run lint
 npm test
-npm run format:check
+npm run build
 ```
 
-Integration tests use the PostgreSQL database configured in `backend/.env.test`. Its name must end in `_test`.
+Integration tests use the database configured in `backend/.env.test`. The database name must end in `_test`
 
 ## Structure
 
-- `frontend`: Next.js and React web application
-- `backend`: Express API, Sequelize models, migrations and tests
-- `docker-compose.yml`: complete local environment
+- `frontend`: Next.js application
+- `backend`: Express API, database models, migrations and tests
+- `.github/workflows`: CI workflow
+- `docker-compose.yml`: local Docker setup
