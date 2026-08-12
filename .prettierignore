@@ -1,0 +1,12 @@
+**/node_modules
+**/.next
+**/out
+**/dist
+**/build
+**/coverage
+**/.env*
+
+.idea
+package-lock.json
+frontend/public
+frontend/src/app/favicon.ico

@@ -1,0 +1,28 @@
+{
+  "name": "pr-forge",
+  "version": "1.0.0",
+  "description": "Full-stack workout planning and progression tracking application",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=pr-forge-backend",
+    "dev:frontend": "npm run dev --workspace=pr-forge-frontend",
+    "build": "npm run build --workspace=pr-forge-frontend",
+    "db:setup": "npm run db:setup --workspace=pr-forge-backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test:run --workspace=pr-forge-backend",
+    "format": "prettier . --write --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "3.9.6"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
