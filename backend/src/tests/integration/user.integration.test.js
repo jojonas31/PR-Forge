@@ -88,6 +88,20 @@ describe("Users API", () => {
       expect(await User.count()).toBe(0);
     });
 
+    it("returns 400 when the password is shorter than 8 characters", async () => {
+      const response = await request(app).post("/api/users/register").send({
+        username: "test-user",
+        email: "test@example.com",
+        password: "short",
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "Password must contain at least 8 characters",
+      });
+      expect(await User.count()).toBe(0);
+    });
+
     it("returns 409 when the email is already registered", async () => {
       const firstUser = {
         username: "first-user",

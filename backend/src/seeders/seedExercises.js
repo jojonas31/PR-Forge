@@ -110,18 +110,6 @@ const exercises = [
     strength_factor: 0.8,
     description: "Dumbbell lateral raise",
   },
-  {
-    name: "Plank",
-    metric_type: "ISOMETRIC",
-    strength_factor: null,
-    description: "Timed front plank",
-  },
-  {
-    name: "Farmer's Hold",
-    metric_type: "GRIP",
-    strength_factor: null,
-    description: "Timed weighted grip hold",
-  },
 ];
 
 async function seedExercises() {

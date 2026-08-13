@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { finishWorkoutRequest, getWorkoutPreparationService } from "@/services/workout";
 
@@ -23,8 +22,6 @@ export async function finishWorkoutAction(exerciseLogs, routineId, routineDayId)
   );
 
   revalidatePath("/", "layout");
-
-  redirect("/routines");
 }
 
 export async function getWorkoutPreparationAction(routineId) {

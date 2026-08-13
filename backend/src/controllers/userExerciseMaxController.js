@@ -5,9 +5,10 @@ const upsertUserMax = async (req, res) => {
   try {
     const userId = req.user.id;
     const { one_rep_max, exercise_id } = req.body;
+    const numericMax = Number(one_rep_max);
 
-    if (!exercise_id || !one_rep_max) {
-      return res.status(400).json({ error: "ID and 1RM are required" });
+    if (!exercise_id || !Number.isFinite(numericMax) || numericMax <= 0) {
+      return res.status(400).json({ error: "ID and a positive 1RM are required" });
     }
 
     const existingMax = await UserExerciseMax.findOne({
@@ -15,7 +16,7 @@ const upsertUserMax = async (req, res) => {
     });
 
     if (existingMax) {
-      existingMax.one_rep_max = one_rep_max;
+      existingMax.one_rep_max = numericMax;
       await existingMax.save();
 
       return res.status(200).json(existingMax);
@@ -23,7 +24,7 @@ const upsertUserMax = async (req, res) => {
       const newMax = await UserExerciseMax.create({
         user_id: userId,
         exercise_id: exercise_id,
-        one_rep_max: one_rep_max,
+        one_rep_max: numericMax,
       });
       return res.status(201).json(newMax);
     }

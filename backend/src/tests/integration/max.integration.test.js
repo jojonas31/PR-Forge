@@ -82,5 +82,21 @@ describe("User exercise maxes API", () => {
       expect(storedMaxes).toHaveLength(1);
       expect(Number(storedMaxes[0].one_rep_max)).toBe(120);
     });
+
+    it("returns 400 when the 1RM is not positive", async () => {
+      const { exercise, token } = await createMaxFixture();
+
+      const response = await request(app)
+        .post("/api/maxes")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          exercise_id: exercise.id,
+          one_rep_max: -100,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: "ID and a positive 1RM are required" });
+      expect(await UserExerciseMax.count()).toBe(0);
+    });
   });
 });

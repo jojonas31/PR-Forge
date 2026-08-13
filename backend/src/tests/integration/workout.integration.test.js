@@ -10,6 +10,7 @@ import {
   ExerciseLog,
   Routine,
   RoutineDay,
+  RoutineDayExercise,
   User,
   UserExerciseMax,
   WorkoutSession,
@@ -40,6 +41,14 @@ async function createWorkoutFixture() {
     day_number: 1,
   });
 
+  await RoutineDayExercise.create({
+    routine_day_id: routineDay.id,
+    exercise_id: exercise.id,
+    sets: 3,
+    reps: 5,
+    sequence_number: 1,
+  });
+
   return {
     user,
     exercise,
@@ -59,6 +68,7 @@ describe("Workouts API", () => {
     await ExerciseLog.destroy({ where: {} });
     await WorkoutSession.destroy({ where: {} });
     await UserExerciseMax.destroy({ where: {} });
+    await RoutineDayExercise.destroy({ where: {} });
     await RoutineDay.destroy({ where: {} });
     await Routine.destroy({ where: {} });
     await Exercise.destroy({ where: {} });
@@ -128,6 +138,59 @@ describe("Workouts API", () => {
       await user.reload();
 
       expect(user.experience).toBe(100);
+    });
+
+    it("returns 400 when the exercise does not belong to the routine day", async () => {
+      const { routine, routineDay, token } = await createWorkoutFixture();
+      const otherExercise = await Exercise.create({
+        name: "Back Squat",
+        metric_type: "TRADITIONAL",
+        strength_factor: 3,
+      });
+
+      const response = await request(app)
+        .post("/api/workouts/history")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          routine_id: routine.id,
+          routine_day_id: routineDay.id,
+          exercise_logs: [
+            {
+              exercise_id: otherExercise.id,
+              set_number: 1,
+              weight: 100,
+              reps: 5,
+            },
+          ],
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: "Exercise does not belong to routine day" });
+      expect(await WorkoutSession.count()).toBe(0);
+    });
+
+    it("returns 400 when an exercise log has invalid values", async () => {
+      const { exercise, routine, routineDay, token } = await createWorkoutFixture();
+
+      const response = await request(app)
+        .post("/api/workouts/history")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          routine_id: routine.id,
+          routine_day_id: routineDay.id,
+          exercise_logs: [
+            {
+              exercise_id: exercise.id,
+              set_number: 1,
+              weight: -10,
+              reps: 5,
+            },
+          ],
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: "Invalid exercise log values" });
+      expect(await WorkoutSession.count()).toBe(0);
     });
   });
 });

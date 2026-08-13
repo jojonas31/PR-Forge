@@ -126,6 +126,35 @@ describe("Routines API", () => {
 
       expect(await Routine.count()).toBe(0);
     });
+
+    it("returns 400 when the routine engine is invalid", async () => {
+      const { exercise, token } = await createRoutineFixture();
+
+      const response = await request(app)
+        .post("/api/routines")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          name: "Invalid Routine",
+          logic_engine: "ADVANCED",
+          days: [
+            {
+              day_number: 1,
+              exercises: [
+                {
+                  exercise_id: exercise.id,
+                  sets: 3,
+                  reps: 10,
+                  sequence_number: 1,
+                },
+              ],
+            },
+          ],
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: "Invalid routine engine" });
+      expect(await Routine.count()).toBe(0);
+    });
   });
 
   describe("GET /api/routines", () => {

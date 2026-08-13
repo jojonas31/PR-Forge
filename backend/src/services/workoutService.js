@@ -2,7 +2,13 @@ import sequelize from "../config/database.js";
 import { Op } from "sequelize";
 import { getUtcWeekRange } from "../utils/dateRanges.js";
 import { grantWorkoutExperience } from "./experienceService.js";
-import { Routine, RoutineDay, WorkoutSession, ExerciseLog } from "../models/index.js";
+import {
+  Routine,
+  RoutineDay,
+  RoutineDayExercise,
+  WorkoutSession,
+  ExerciseLog,
+} from "../models/index.js";
 
 import { updateExerciseMaxesFromLogs } from "./maxService.js";
 
@@ -36,6 +42,51 @@ const finishWorkout = async ({ userId, routineId, routineDayId, exerciseLogs, no
       throw error;
     }
 
+    const plannedExercises = await RoutineDayExercise.findAll({
+      where: {
+        routine_day_id: routineDayId,
+      },
+      attributes: ["exercise_id"],
+      transaction,
+    });
+
+    const logsToSave = [];
+
+    for (const log of exerciseLogs) {
+      const belongsToDay = plannedExercises.some(
+        (exercise) => exercise.exercise_id === log.exercise_id,
+      );
+      const setNumber = Number(log.set_number);
+      const weight = Number(log.weight);
+      const reps = Number(log.reps);
+
+      if (!belongsToDay) {
+        const error = new Error("Exercise does not belong to routine day");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (
+        !Number.isInteger(setNumber) ||
+        setNumber < 1 ||
+        !Number.isFinite(weight) ||
+        weight < 0 ||
+        !Number.isInteger(reps) ||
+        reps < 1
+      ) {
+        const error = new Error("Invalid exercise log values");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      logsToSave.push({
+        exercise_id: log.exercise_id,
+        set_number: setNumber,
+        weight,
+        reps,
+      });
+    }
+
     const session = await WorkoutSession.create(
       {
         user_id: userId,
@@ -46,17 +97,12 @@ const finishWorkout = async ({ userId, routineId, routineDayId, exerciseLogs, no
       { transaction },
     );
 
-    const logsToSave = exerciseLogs.map((log) => ({
+    const sessionLogs = logsToSave.map((log) => ({
+      ...log,
       workout_session_id: session.id,
-      exercise_id: log.exercise_id,
-      set_number: log.set_number,
-      weight: Number(log.weight) || 0,
-      reps: Number(log.reps) || 0,
-      duration_seconds: Number(log.duration_seconds) || 0,
-      is_pr: false,
     }));
 
-    const createdLogs = await ExerciseLog.bulkCreate(logsToSave, {
+    const createdLogs = await ExerciseLog.bulkCreate(sessionLogs, {
       transaction,
       validate: true,
       returning: true,

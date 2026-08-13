@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function ActiveWorkoutForm({ initialExercises, routineId, routineDayId }) {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [workoutData, setWorkoutData] = useState(() =>
     initialExercises.map((ex) => ({
       exerciseId: ex.id,
@@ -71,6 +72,8 @@ export default function ActiveWorkoutForm({ initialExercises, routineId, routine
   };
 
   const handleFinish = async () => {
+    if (isSubmitting) return;
+
     const invalidSet = findInvalidCompletedSet();
 
     if (invalidSet) {
@@ -100,7 +103,15 @@ export default function ActiveWorkoutForm({ initialExercises, routineId, routine
       return;
     }
 
-    await finishWorkoutAction(logsToSave, routineId, routineDayId);
+    setIsSubmitting(true);
+
+    try {
+      await finishWorkoutAction(logsToSave, routineId, routineDayId);
+      router.push("/routines");
+    } catch {
+      setIsSubmitting(false);
+      alert("Could not save the workout");
+    }
   };
 
   return (
@@ -196,9 +207,10 @@ export default function ActiveWorkoutForm({ initialExercises, routineId, routine
           </button>
           <button
             onClick={handleFinish}
-            className="flex-1 py-4 bg-yellow-500 text-zinc-950 font-black rounded-xl uppercase tracking-wider shadow-lg shadow-yellow-500/10 hover:bg-yellow-400 transition-colors"
+            disabled={isSubmitting}
+            className="flex-1 py-4 bg-yellow-500 text-zinc-950 font-black rounded-xl uppercase tracking-wider shadow-lg shadow-yellow-500/10 hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Finish
+            {isSubmitting ? "Saving..." : "Finish"}
           </button>
         </div>
       </div>

@@ -19,6 +19,12 @@ const saveWorkoutHistory = async (req, res) => {
       });
     }
 
+    if (!routine_day_id) {
+      return res.status(400).json({
+        error: "routine_day_id is required",
+      });
+    }
+
     if (!Array.isArray(exercise_logs) || exercise_logs.length === 0) {
       return res.status(400).json({
         error: "At least one exercise log is required",
@@ -48,10 +54,14 @@ const saveWorkoutHistory = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error saving workout:", error);
+    const statusCode = error.statusCode || 500;
 
-    return res.status(error.statusCode || 500).json({
-      error: error.statusCode === 404 ? error.message : "Internal server error",
+    if (statusCode === 500) {
+      console.error("Error saving workout:", error);
+    }
+
+    return res.status(statusCode).json({
+      error: error.statusCode ? error.message : "Internal server error",
     });
   }
 };

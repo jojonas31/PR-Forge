@@ -23,7 +23,6 @@ ENV NODE_ENV=production
 RUN npm ci --omit=dev --workspace=pr-forge-frontend && npm cache clean --force
 
 COPY --from=build --chown=node:node /app/frontend/.next ./frontend/.next
-COPY --from=build --chown=node:node /app/frontend/public ./frontend/public
 
 USER node
 

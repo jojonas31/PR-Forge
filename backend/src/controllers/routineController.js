@@ -4,11 +4,17 @@ import { createRoutineService } from "../services/routineService.js";
 const createRoutine = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, logic_engine, days } = req.body;
+    const { name, logic_engine = "MANUAL", days } = req.body;
 
     if (!name || !Array.isArray(days) || days.length === 0) {
       return res.status(400).json({
         error: "A routine must contain at least one day",
+      });
+    }
+
+    if (!["MANUAL", "BEGINNER"].includes(logic_engine)) {
+      return res.status(400).json({
+        error: "Invalid routine engine",
       });
     }
 

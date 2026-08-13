@@ -22,7 +22,7 @@ describe("Exercises API", () => {
   });
 
   describe("GET /api/exercises", () => {
-    it("returns all stored exercises", async () => {
+    it("returns only traditional exercises", async () => {
       await Exercise.bulkCreate([
         {
           name: "Bench Press",
@@ -37,20 +37,11 @@ describe("Exercises API", () => {
       const response = await request(app).get("/api/exercises");
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveLength(2);
-
-      expect(response.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: "Bench Press",
-            metric_type: "TRADITIONAL",
-          }),
-          expect.objectContaining({
-            name: "Plank",
-            metric_type: "ISOMETRIC",
-          }),
-        ]),
-      );
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        name: "Bench Press",
+        metric_type: "TRADITIONAL",
+      });
     });
   });
 });

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Hammer, CalendarDays, Star } from "lucide-react";
+import { Hammer, CalendarDays, HelpCircle, Star } from "lucide-react";
 import { cookies } from "next/headers";
 import { StatCard } from "@/components/StatCard";
 import { getActiveRoutineAction } from "@/actions/routines";
@@ -95,7 +95,21 @@ export default async function Home() {
             subtitle="Points"
             value={strengthPoints}
             unit="pts"
-          />
+          >
+            <details className="group absolute right-4 top-4 z-20">
+              <summary
+                className="flex h-5 w-5 cursor-pointer list-none items-center justify-center text-zinc-500 transition-colors hover:text-yellow-500 [&::-webkit-details-marker]:hidden"
+                aria-label="Explain strength points"
+              >
+                <HelpCircle className="h-4 w-4" />
+              </summary>
+
+              <p className="absolute right-0 mt-2 w-64 rounded-lg border border-zinc-700 bg-zinc-950 p-3 text-left text-xs leading-relaxed text-zinc-300 shadow-xl">
+                Points are based on your best estimated 1RM for each strength exercise. Each result
+                is adjusted by the exercise and added to your total.
+              </p>
+            </details>
+          </StatCard>
         </div>
       </section>
     </div>
