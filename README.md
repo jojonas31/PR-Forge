@@ -1,78 +1,61 @@
 # PR Forge
 
-Workout tracker for creating routines, logging sessions and following strength progression
+A full-stack workout tracker for building routines, logging training sessions and monitoring strength progression.
 
-Built with Next.js, Express, Sequelize and PostgreSQL.
+PR Forge Demo video: https://youtu.be/zm56ngPskZ0
 
-## Tech stack
+## Features
 
-- Frontend: Next.js, React, Tailwind CSS
-- Backend: Node.js, Express
-- Database: PostgreSQL, Sequelize
-- Testing: Vitest, Supertest
-- Tooling: Docker Compose, ESLint, Prettier, GitHub Actions CI
+- Account registration and JWT-based authentication
+- Custom and beginner-friendly workout routines
+- Workout logging with estimated one-rep max calculations
+- Personal records, strength points and weekly progress
+- Responsive interface for desktop and mobile
 
-## Run with Docker
+## Technical highlights
 
-Docker Desktop and Docker Compose are required, open Docker Desktop before running the commands
+- Transactional workout completion with Sequelize
+- Protected API endpoints with user-scoped resources
+- PostgreSQL migrations and repeatable exercise seeding
+- Unit and integration tests with Vitest and Supertest
+- Reproducible local environment with Docker Compose
+- Automated formatting, linting, tests and production builds with GitHub Actions CI
 
-From the project root, create the environment file:
+## Stack
+
+Next.js · React · Tailwind CSS · Express · PostgreSQL · Sequelize · Vitest · Docker
+
+## Run locally
+
+Docker Desktop and Docker Compose are required.
+
+On Windows PowerShell:
 
 ```
 Copy-Item .env.example .env
+docker compose up --build
 ```
 
 On macOS or Linux:
 
 ```
 cp .env.example .env
-```
-
-Then start the application:
-
-```
 docker compose up --build
 ```
 
-The first start builds the images, runs the migrations and loads the exercise catalog
+The first start runs the database migrations and loads the exercise catalog.
 
 - App: `http://localhost:3000`
 - API health: `http://localhost:3001/health`
 
-Use `Ctrl+C` to stop the logs, then remove the containers with:
-
-```
-docker compose down
-```
-
-Database data is kept between restarts
-
-## Run without Docker
-
-This requires Node.js 24 and a local PostgreSQL instance.
-
-Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env.local`. Update the database values in `backend/.env` and create the configured database before running:
+## Quality checks
 
 ```
 npm ci
-npm run db:setup
-npm run dev
-```
-
-## Checks
-
-```
 npm run format:check
 npm run lint
 npm test
 npm run build
 ```
 
-Integration tests use the database configured in `backend/.env.test`. The database name must end in `_test`
-
-## Structure
-
-- `frontend`: Next.js application
-- `backend`: Express API, database models, migrations and tests
-- `.github/workflows`: CI workflow
-- `docker-compose.yml`: local Docker setup
+Integration tests require a separate PostgreSQL database whose name ends in `_test`.
