@@ -9,17 +9,14 @@ let server;
 let isShuttingDown = false;
 
 function validateEnvironment() {
-  const requiredVariables = [
-    "DB_HOST",
-    "DB_PORT",
-    "DB_USER",
-    "DB_PASSWORD",
-    "DB_NAME",
-    "JWT_SECRET",
-    "FRONTEND_URL",
-  ];
+  const requiredVariables = ["JWT_SECRET", "FRONTEND_URL"];
+  const databaseUrl = process.env.DATABASE_URL?.trim();
 
-  const missingVariables = requiredVariables.filter((variable) => !process.env[variable]);
+  if (!databaseUrl) {
+    requiredVariables.push("DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME");
+  }
+
+  const missingVariables = requiredVariables.filter((variable) => !process.env[variable]?.trim());
 
   if (missingVariables.length > 0) {
     throw new Error(`Missing environment variables: ${missingVariables.join(", ")}`);
