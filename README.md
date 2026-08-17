@@ -2,7 +2,13 @@
 
 A full-stack workout tracker for building routines, logging training sessions and monitoring strength progression
 
-[Watch the demo](https://youtu.be/zm56ngPskZ0)
+## Live demo
+
+- [Open PR Forge](https://pr-forge-frontend.vercel.app)
+- [Watch the video demo](https://youtu.be/zm56ngPskZ0)
+- [API health check](https://pr-forge-api.onrender.com/health)
+
+The backend uses a free hosting tier, so the first request after a period of inactivity may take a few moments
 
 ## Features
 
