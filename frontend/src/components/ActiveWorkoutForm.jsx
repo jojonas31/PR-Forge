@@ -58,7 +58,8 @@ export default function ActiveWorkoutForm({ initialExercises, routineId, routine
 
         const isInvalid =
           set.completed &&
-          (!Number.isFinite(weightNumber) ||
+          (set.weight === "" ||
+            !Number.isFinite(weightNumber) ||
             weightNumber < 0 ||
             !Number.isInteger(repsNumber) ||
             repsNumber <= 0);
